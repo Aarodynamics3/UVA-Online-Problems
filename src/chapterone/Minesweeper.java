@@ -56,18 +56,23 @@ public class Minesweeper {
 	
 	static void printNewField(int n, int m, char[][] field, int fieldNo) {
 		// Adds a space between input and other fields.
-		System.out.println();
+		System.out.println("\n" + "Field #" + fieldNo + ":");
 		
-		// Currently in here for testing, prints out the same exact field as before.
 		for (int i = 0; i < n; i++) {
 			String newLine = "";
 			
 			for (int j = 0; j < m; j++) {
-				newLine += field[i][j];
+				if (field[i][j] == '*') {
+					newLine += '*';
+				} else {
+					int noOfBombs = 0;
+					
+					newLine += noOfBombs;
+				}
 			}
 			
 			System.out.println(newLine);
 		}
 	}
-
+	
 }
