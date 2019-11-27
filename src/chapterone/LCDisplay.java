@@ -15,15 +15,15 @@ public class LCDisplay {
 		
 		while (in.hasNext()) {
 			int size = in.nextInt();
-			int inputNums = in.nextInt();
+			String inputNums = in.next();
 			
 			// End case to stop program, do not eval.
-			if (size == 0 && inputNums == 0) {
+			if (size == 0) {
 				break;
 			}
 			
 			// Simple array of the input of integers each represented as strings.
-			String[] nums = Integer.toString(inputNums).split("");
+			String[] nums = inputNums.split("");
 			
 			// List of the arrays of the numbers.
 			ArrayList<numArray> myList = new ArrayList<numArray>();
@@ -37,7 +37,7 @@ public class LCDisplay {
 		}
 		
 		for (int i = 0; i < finalResults.size(); i++) {
-			System.out.println(finalResults.get(i).getLCDislpay() + (i == finalResults.size() - 1 ? "" : "\n"));
+			System.out.println(finalResults.get(i).getLCDislpay() + "\n");
 		}
 		
 		in.close();
