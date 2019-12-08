@@ -34,15 +34,6 @@ PP..PPPP
 RNBQKB.R
 
 ........
-..p.....
-........
-........
-k.R....q
-........
-..p.....
-........
-
-........
 ........
 ........
 ........
@@ -64,7 +55,6 @@ public class CheckTheCheck {
 		ArrayList<String> results;
 		int gameNo;
 		String[][] board = null;
-		boolean wKingInCheck = false, bKingInCheck = false;
 
 		in = new Scanner(new BufferedInputStream(System.in));
 		results = new ArrayList<String>();
@@ -74,6 +64,7 @@ public class CheckTheCheck {
 			int checkIfEmpty = 0;
 			board = new String[12][12];
 			gameNo++;
+			boolean wKingInCheck = false, bKingInCheck = false;
 
 			for (int i = 0; i < board.length; i++) {
 				String line = (i > 1 && i < 10) ? in.nextLine() : "........";
@@ -98,8 +89,6 @@ public class CheckTheCheck {
 			if (checkIfEmpty - 4 == 8) {
 				break;
 			}
-			//TODO bishop case
-			//TODO queen case
 			// Time to check if kings are in check.
 			for (int i = 2; i < 10; i++) {
 				for (int j = 2; j < 10; j++) {
@@ -118,8 +107,21 @@ public class CheckTheCheck {
 						}
 						break;
 					case "b":
+						String[] diag = getDiagonals(board, j, i);
+						for (int x = 0; x < diag.length; x++) {
+							if (isUpperCase && diag[x].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && diag[x].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+						}
 						break;
 					case "q":
+						String[] diagonals = getDiagonals(board, j, i);
+						String[] perpindiculars = getPerpindiculars(board, j, i);
+						for (int t = 0; t < diagonals.length; t++) {
+							if (isUpperCase && diagonals[t].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && diagonals[t].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+							if (isUpperCase && perpindiculars[t].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && perpindiculars[t].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+						}
 						break;
 					case "k":
 						String[] kingJumps = {board[i - 1][j - 1], board[i - 1][j], board[i - 1][j + 1], board[i][j + 1],
@@ -141,12 +143,12 @@ public class CheckTheCheck {
 				}
 			}
 			
-			results.add(wKingInCheck ? "Game #" + gameNo + ": white king is in check"
-					: (bKingInCheck ? "Game #" + gameNo + ": black king is in check"
+			results.add(bKingInCheck ? "Game #" + gameNo + ": white king is in check."
+					: (wKingInCheck ? "Game #" + gameNo + ": black king is in check."
 							: "Game #" + gameNo + ": no king is in check."));
 
 		}
-
+		
 		// Print out all of the results.
 		for (int i = 0; i < results.size(); i++) {
 			System.out.println(results.get(i));
@@ -179,8 +181,25 @@ public class CheckTheCheck {
 	}
 
 	static String[] getDiagonals(String[][] board, int x, int y) {
+		String[] ret = {".",".",".","."};
 		
-		return null;
+		// Gets the left diagonal row.
+		for (int i = y - 1, j = x - 1; i > 0 && j > 0; i--, j--) {
+			if (!board[i][j].equals(".")) {ret[0] = board[i][j]; i = 0; j = 0;}
+		}
+		for (int i = y + 1, j = x + 1; i < board.length && j < board[0].length; i++, j++) {
+			if (!board[i][j].equals(".")) {ret[1] = board[i][j]; i = board.length; j = board[0].length;}
+		}
+		
+		// Gets the right diagonal row.
+		for (int i = y + 1, j = x - 1; i < board.length && j > 0; i++, j--) {
+			if (!board[i][j].equals(".")) {ret[2] = board[i][j]; i = board.length; j = 0;}
+		}
+		for (int i = y - 1, j = x + 1; i > 0 && j < board[0].length; i--, j++) {
+			if (!board[i][j].equals(".")) {ret[3] = board[i][j]; i = 0; j = board[0].length;}
+		}
+		
+		return ret;
 	}
 }
 
