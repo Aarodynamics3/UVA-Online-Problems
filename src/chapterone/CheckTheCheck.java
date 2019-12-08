@@ -96,55 +96,55 @@ public class CheckTheCheck {
 					String pce = board[i][j].toLowerCase();
 					switch (pce) {
 					case "p":
-						if (isUpperCase && (board[i - 1][j - 1].equals("k") || board[i - 1][j + 1].equals("k"))) { wKingInCheck = true; i = 10; j = 10; }
-						if (!isUpperCase && (board[i + 1][j - 1].equals("k") || board[i + 1][j + 1].equals("K"))) { bKingInCheck = true;  i = 10; j = 10; }
+						if (isUpperCase && (board[i - 1][j - 1].equals("k") || board[i - 1][j + 1].equals("k"))) { bKingInCheck = true; i = 10; j = 10; }
+						if (!isUpperCase && (board[i + 1][j - 1].equals("K") || board[i + 1][j + 1].equals("K"))) { wKingInCheck = true;  i = 10; j = 10; }
 						break;
 					case "r":
 						String[] perps = getPerpindiculars(board, j, i);
 						for (int a = 0; a < perps.length; a++) {
-							if (isUpperCase && perps[a].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
-							if (!isUpperCase && perps[a].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+							if (isUpperCase && perps[a].equals("k")) { bKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && perps[a].equals("K")) { wKingInCheck = true;  i = 10; j = 10; }
 						}
 						break;
 					case "b":
 						String[] diag = getDiagonals(board, j, i);
 						for (int x = 0; x < diag.length; x++) {
-							if (isUpperCase && diag[x].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
-							if (!isUpperCase && diag[x].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+							if (isUpperCase && diag[x].equals("k")) { bKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && diag[x].equals("K")) { wKingInCheck = true;  i = 10; j = 10; }
 						}
 						break;
 					case "q":
 						String[] diagonals = getDiagonals(board, j, i);
 						String[] perpindiculars = getPerpindiculars(board, j, i);
 						for (int t = 0; t < diagonals.length; t++) {
-							if (isUpperCase && diagonals[t].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
-							if (!isUpperCase && diagonals[t].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
-							if (isUpperCase && perpindiculars[t].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
-							if (!isUpperCase && perpindiculars[t].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+							if (isUpperCase && diagonals[t].equals("k")) { bKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && diagonals[t].equals("K")) { wKingInCheck = true;  i = 10; j = 10; }
+							if (isUpperCase && perpindiculars[t].equals("k")) { bKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && perpindiculars[t].equals("K")) { wKingInCheck = true;  i = 10; j = 10; }
 						}
 						break;
 					case "k":
 						String[] kingJumps = {board[i - 1][j - 1], board[i - 1][j], board[i - 1][j + 1], board[i][j + 1],
 								board[i][j - 1], board[i + 1][j + 1], board[i + 1][j], board[i + 1][j - 1]};
 						for (int n = 0; n < kingJumps.length; n++) {
-							if (isUpperCase && kingJumps[n].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
-							if (!isUpperCase && kingJumps[n].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+							if (isUpperCase && kingJumps[n].equals("k")) { bKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && kingJumps[n].equals("K")) { wKingInCheck = true;  i = 10; j = 10; }
 						}
 						break;
 					case "n":
-						String[] potentialJumps = {board[i - 1][j - 2], board[i - 1][j - 2], board[i - 1][j - 2],
-								board[i - 1][j - 2], board[i - 1][j - 2], board[i - 1][j - 2]};
+						String[] potentialJumps = {board[i - 1][j - 2], board[i - 2][j - 1], board[i - 2][j + 1], board[i - 1][j + 2],
+								board[i + 1][j - 2], board[i + 2][j - 1], board[i + 2][j + 1], board[i + 1][j + 2]};
 						for (int m = 0; m < potentialJumps.length; m++) {
-							if (isUpperCase && potentialJumps[m].equals("k")) { wKingInCheck = true; i = 10; j = 10; }
-							if (!isUpperCase && potentialJumps[m].equals("K")) { bKingInCheck = true;  i = 10; j = 10; }
+							if (isUpperCase && potentialJumps[m].equals("k")) { bKingInCheck = true; i = 10; j = 10; }
+							if (!isUpperCase && potentialJumps[m].equals("K")) { wKingInCheck = true;  i = 10; j = 10; }
 						}
 						break;
 					}
 				}
 			}
 			
-			results.add(bKingInCheck ? "Game #" + gameNo + ": white king is in check."
-					: (wKingInCheck ? "Game #" + gameNo + ": black king is in check."
+			results.add(wKingInCheck ? "Game #" + gameNo + ": white king is in check."
+					: (bKingInCheck ? "Game #" + gameNo + ": black king is in check."
 							: "Game #" + gameNo + ": no king is in check."));
 
 		}
