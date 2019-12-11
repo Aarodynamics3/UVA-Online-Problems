@@ -65,6 +65,7 @@ public class AustralianVoting {
 				for (int j = 0; j < votingData.size(); j++) {
 					// Tally up all of the initial votes; update their votes and vote percentage.
 					candidates[votingData.get(j)[i] - 1].votes++;
+					//TODO make sure percentage is correct
 					candidates[votingData.get(j)[i] - 1].votePercent = (double) candidates[votingData.get(j)[i] - 1].votes / (double) votingData.size();
 				}
 
@@ -81,6 +82,8 @@ public class AustralianVoting {
 					}
 				}
 				
+				System.out.println("lowest percent: " + lowestPercent + " i: " + i);
+				
 				// Any candidates with the lowest percent are eliminated. If not eliminated, their string of votes is removed from votingData.
 				//TODO account for the case that a group can have the same percentage at the end with no more votes to go (use the i counter)
 				for (int m = 0; m < candidates.length; m++) {
@@ -90,7 +93,8 @@ public class AustralianVoting {
 					
 					//TODO current objective is to remove each string of votes of the people not eliminated
 					//TODO fix this fucking shit
-					if (!candidates[m].eliminated) {
+					// is getting out of bounds exception when above sets i = numOfCandidates
+					if (!candidates[m].eliminated && i < numOfCandidates) {
 						Iterator<int[]> iter = votingData.iterator();
 						while (iter.hasNext()) {
 							int[] cur = iter.next();
@@ -101,7 +105,7 @@ public class AustralianVoting {
 
 			}
 			
-			//TODO don't think we need to skip a line at the end anymore
+			//TODO don't think i need to skip a line at the end anymore
 			// Skip the blank line in between inputs.
 			//in.nextLine();
 		}
