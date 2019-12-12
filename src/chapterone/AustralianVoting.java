@@ -59,55 +59,62 @@ public class AustralianVoting {
 				votingData.add(repl);
 			}
 
+			int votingSize = votingData.size();
+			
 			// Find the winner(s) for this data.
+			//TODO Account for the case where all candidates are tied. 
 			for (int i = 0; i < numOfCandidates; i++) {
-				// Get the votes for the current column.
 				for (int j = 0; j < votingData.size(); j++) {
-					// Tally up all of the initial votes; update their votes and vote percentage.
-					candidates[votingData.get(j)[i] - 1].votes++;
-					//TODO make sure percentage is correct
-					candidates[votingData.get(j)[i] - 1].votePercent = (double) candidates[votingData.get(j)[i] - 1].votes / (double) votingData.size();
-				}
-
-				double lowestPercent = 100.00;
-				
-				// Check if any person is above 50% while also finding the lowest percentage.
-				for (int m = 0; m < candidates.length; m++) {
-					if (candidates[m].votePercent > 0.5) {
-						i = numOfCandidates;
-						results.add(candidates[m].name);
-						break;
-					} else if (candidates[m].votePercent < lowestPercent && !candidates[m].eliminated) {
-						lowestPercent = candidates[m].votePercent;
-					}
-				}
-				
-				System.out.println("lowest percent: " + lowestPercent + " i: " + i);
-				
-				// Any candidates with the lowest percent are eliminated. If not eliminated, their string of votes is removed from votingData.
-				//TODO account for the case that a group can have the same percentage at the end with no more votes to go (use the i counter)
-				for (int m = 0; m < candidates.length; m++) {
-					if (candidates[m].votePercent == lowestPercent) {
-						candidates[m].eliminated = true;
-					}
-					
-					//TODO current objective is to remove each string of votes of the people not eliminated
-					//TODO fix this fucking shit
-					// is getting out of bounds exception when above sets i = numOfCandidates
-					if (!candidates[m].eliminated && i < numOfCandidates) {
-						Iterator<int[]> iter = votingData.iterator();
-						while (iter.hasNext()) {
-							int[] cur = iter.next();
-							if (cur[i] == m) { iter.remove(); }
+					for (int l = 0; l < votingData.get(0).length; l++) {
+						if (!candidates[votingData.get(j)[l] - 1].eliminated) {
+							candidates[votingData.get(j)[l] - 1].votes++;
+							candidates[votingData.get(j)[l] - 1].votePercent = ((double) candidates[votingData.get(j)[l] - 1].votes / (double) votingSize) * 100;
+							break;
 						}
 					}
 				}
-
+				
+				double lowestPercent = 100.00;
+				
+				// Check if any person is above 50% while also finding the lowest percentage.
+				for (int m = 0; m < candidates.length; m++) {			
+					if (!candidates[m].eliminated) {
+						if (candidates[m].votePercent > 50.00) {
+							i = numOfCandidates;
+							results.add(candidates[m].name);
+							break;
+						} else if (candidates[m].votePercent < lowestPercent && candidates[m].votePercent > 0.0) {
+							lowestPercent = candidates[m].votePercent;
+						}
+					}
+				}
+				
+//				List<Integer> temp = new ArrayList<Integer>();
+//				boolean same = true;
+				
+				// All of them are tied case.
+				for (int n = 0; n < candidates.length; n++) {
+//					if (candidates[n].votes > 0) {
+//						temp.add(n);
+//					}
+//					if (temp.size() > 1 && candidates[temp.get(n)].votes != candidates[temp.get(0)].votes) {
+//						same = false;
+//						break;
+//					}
+				}
+				
+				
+				
+				
+				// Any candidates with the lowest percent are eliminated. If not eliminated, their string of votes is removed from votingData.
+				for (int m = 0; m < candidates.length; m++) {
+					if (candidates[m].votePercent == lowestPercent) {
+						candidates[m].eliminated = true; 
+					} else {
+						candidates[m].votes = 0;
+					}
+				}			
 			}
-			
-			//TODO don't think i need to skip a line at the end anymore
-			// Skip the blank line in between inputs.
-			//in.nextLine();
 		}
 
 		// Print out the results with a new line in between cases.
