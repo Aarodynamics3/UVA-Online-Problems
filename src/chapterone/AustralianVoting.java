@@ -1,10 +1,10 @@
 package chapterone;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.io.BufferedInputStream;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /*
 Sample input:
@@ -26,117 +26,122 @@ John Doe
 
 public class AustralianVoting {
 
-	public static void main(String[] args) {
-		Scanner in;
-		List<String> results;
-		int numCases;
-
-		in = new Scanner(new BufferedInputStream(System.in));
-		results = new ArrayList<String>();
-		numCases = Integer.parseInt(in.nextLine());
-		in.nextLine();
-
-		for (int caseNum = 0; caseNum < numCases; caseNum++) {
-			int numOfCandidates = Integer.parseInt(in.nextLine());
-			Candidate[] candidates = new Candidate[numOfCandidates];
-
-			// Get all of the candidates and store it in the candidates array.
-			for (int i = 0; i < numOfCandidates; i++) {
-				candidates[i] = new Candidate(in.nextLine());
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		int numberOfCases = Integer.parseInt(in.readLine());
+		List<String> results = new ArrayList<String>();
+		
+		//Skip next blank line.
+		in.readLine();
+		
+		for (int caseNumber = 0; caseNumber < numberOfCases; caseNumber++)  {
+			int numberOfCandidates = Integer.parseInt(in.readLine());
+			Candidate[] candidates = new Candidate[numberOfCandidates];
+			
+			// Get all of the candidates and store it in an array.
+			for (int i = 0; i < numberOfCandidates; i++) {
+				candidates[i] = new Candidate(in.readLine());
 			}
-
-			// Array list of arrays to hold the voting data.
-			List<int[]> votingData = new ArrayList<int[]>();
-
+			
 			// Parse the voting data and store it in an array list of arrays.
-			String line = null;
-			while (!(line = in.nextLine()).isEmpty()) {
+			List<int[]> tempData = new ArrayList<int[]>();
+			String line;
+			while (true) {
+				line = in.readLine();
+				if (line == null || line.equals("")) { break; }
 				String[] temp = line.split(" ");
 				int[] repl = new int[temp.length];
 				for (int i = 0; i < repl.length; i++) {
 					repl[i] = Integer.parseInt(temp[i]);
 				}
-				votingData.add(repl);
+				tempData.add(repl);
 			}
-
-			int votingSize = votingData.size();
 			
-			// Find the winner(s) for this data.
-			//TODO Account for the case where all candidates are tied. 
-			for (int i = 0; i < numOfCandidates; i++) {
-				for (int j = 0; j < votingData.size(); j++) {
-					for (int l = 0; l < votingData.get(0).length; l++) {
-						if (!candidates[votingData.get(j)[l] - 1].eliminated) {
-							candidates[votingData.get(j)[l] - 1].votes++;
-							candidates[votingData.get(j)[l] - 1].votePercent = ((double) candidates[votingData.get(j)[l] - 1].votes / (double) votingSize) * 100;
-							break;
-						}
-					}
+			// Move the data into a 2d array.
+			int[][] data = new int[tempData.size()][tempData.get(0).length];
+			for (int i = 0; i < data.length; i++) {
+				for (int j = 0; j < data[0].length; j++) {
+					data[i][j] = tempData.get(i)[j];
 				}
-				
-				double lowestPercent = 100.00;
-				
-				// Check if any person is above 50% while also finding the lowest percentage.
-				for (int m = 0; m < candidates.length; m++) {			
-					if (!candidates[m].eliminated) {
-						if (candidates[m].votePercent > 50.00) {
-							i = numOfCandidates;
-							results.add(candidates[m].name);
-							break;
-						} else if (candidates[m].votePercent < lowestPercent && candidates[m].votePercent > 0.0) {
-							lowestPercent = candidates[m].votePercent;
-						}
-					}
-				}
-				
-//				List<Integer> temp = new ArrayList<Integer>();
-//				boolean same = true;
-				
-				// All of them are tied case.
-				for (int n = 0; n < candidates.length; n++) {
-//					if (candidates[n].votes > 0) {
-//						temp.add(n);
-//					}
-//					if (temp.size() > 1 && candidates[temp.get(n)].votes != candidates[temp.get(0)].votes) {
-//						same = false;
-//						break;
-//					}
-				}
-				
-				
-				
-				
-				// Any candidates with the lowest percent are eliminated. If not eliminated, their string of votes is removed from votingData.
-				for (int m = 0; m < candidates.length; m++) {
-					if (candidates[m].votePercent == lowestPercent) {
-						candidates[m].eliminated = true; 
-					} else {
-						candidates[m].votes = 0;
-					}
-				}			
 			}
+			
+			// Find the winner(s).
+			for (int votingRounds = 0; votingRounds < numberOfCandidates; votingRounds++) {
+				double[] curPercents = new double[numberOfCandidates];
+				
+				// Parse through the data for the current voting round.
+				for (int i = 0; i < data.length; i++) {
+					for (int j = 0; j < data[0].length; j++) {
+						// Current candidate being evaluated.
+						int cur = data[i][j] - 1;
+						if (!candidates[cur].eliminated) {
+							candidates[cur].votes++;
+							double curPercent = (double) Math.round(((double) candidates[cur].votes / (double) data.length) * 10000) / 100;
+							curPercents[cur] = curPercent;
+							// If percent is over 50, return because they are the winner.
+							if (curPercent > 50.00) { results.add(candidates[cur].name); i = data.length; votingRounds = numberOfCandidates; }
+							break;
+						}
+					}
+				}
+				
+				if (votingRounds < numberOfCandidates) {
+					
+					// Find lowest percent.
+					double lowestPercent = 100.00;
+					// Number of candidates votes greater than one.
+					int numGTOne = 0;
+					for (int i = 0; i < candidates.length; i++) {
+						if (!candidates[i].eliminated) {
+							if (curPercents[i] < lowestPercent) { lowestPercent = curPercents[i]; }
+							if (candidates[i].votes > 0) { numGTOne++; }
+						}
+						candidates[i].votes = 0;
+					}
+					
+					// All tied case.
+					if (lowestPercent > 0) {
+						int numCandidatesMatchingLowest = 0;
+						String temp = "";
+						for (int i = 0; i < candidates.length; i++ ) {
+							if (!candidates[i].eliminated && curPercents[i] == lowestPercent) {
+								numCandidatesMatchingLowest++;
+								temp += candidates[i].name + (numCandidatesMatchingLowest == numGTOne ? "" : "\n");
+							}
+						}
+						if (numCandidatesMatchingLowest == numGTOne) { results.add(temp); votingRounds = numberOfCandidates;}
+					}
+					
+					// Any candidates with lowest percentage eliminated, vote counts are reset.
+					for (int i = 0; i < candidates.length; i++) {
+						if (curPercents[i] == lowestPercent) {
+							candidates[i].eliminated = true;
+						}
+					}
+					
+				}
+			}
+			
 		}
-
-		// Print out the results with a new line in between cases.
+		
+		// Print out the winner(s).
 		for (int i = 0; i < results.size(); i++) {
 			System.out.println(results.get(i) + (i == results.size() - 1 ? "" : "\n"));
 		}
-
+		
+		// Close scanner.
 		in.close();
 	}
-
+	
 	static class Candidate {
 		boolean eliminated;
 		int votes;
-		double votePercent;
 		String name;
-
-		public Candidate(String inputName) {
-			eliminated = false;
+		
+		public Candidate(String name) {
+			this.name = name;
 			votes = 0;
-			name = inputName;
-			votePercent = 0;
+			eliminated = false;
 		}
 	}
-
 }
